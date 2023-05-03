@@ -18,7 +18,7 @@ router.get('/', requiresAuth(), async function (req, res, next) {
   const params = {
     Bucket: process.env.CYCLIC_BUCKET_NAME,
     Delimiter: '/',
-    Prefix: 'public/',
+    Prefix: req.oidc.user.email + '/',
   };
   const allObjects = await s3.listObjectsV2(params).promise(); // ..first 1000
   const keys = allObjects?.Contents.map((x) => x.Key);
@@ -47,7 +47,7 @@ router.post('/', requiresAuth(), async function (req, res, next) {
       .putObject({
         Body: req.files.file.data,
         Bucket: process.env.CYCLIC_BUCKET_NAME,
-        Key: 'public/' + req.files.file.name,
+        Key: req.oidc.user.email + '/' + req.files.file.name,
       })
       .promise();
 
